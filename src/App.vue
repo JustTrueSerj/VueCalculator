@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    <div id="calculator">
-      <div class="result">{{ result }}</div>
-    <div id="calcOperatorsLeft">
-      <div @click="operation(operator)" v-for="operator in operatorsLeft" class="operatorLeft"> <p>{{ operator }}</p></div>
-<div id="valOps">
-  <div id="calcValues">
-    <div @click="addResult(value)" class="values" v-for="value in values"> <p>{{ value }}</p></div>
-  </div>
-    <div id="calcOperatorsRight">
-      <div @click="operation(operator)" v-for="operator in operatorsRight" class="operatorRight" > <p>{{ operator }}</p></div>
-    </div>
-    </div>
-    </div>
-    </div>
+     <div id="calculator">
+       <div class="result">{{ result }}</div>
+          <div id="calcOperatorsLeft">
+             <div @click="operation(operator)" v-for="operator in operatorsLeft" class="operatorLeft"> <p>{{ operator }}</p></div>
+        <div id="valOps">
+           <div id="calcValues">
+               <div @click="addResult(value)" class="values" v-for="value in values"> <p>{{ value }}</p></div>
+           </div>
+                <div id="calcOperatorsRight">
+                    <div @click="operation(operator)" v-for="operator in operatorsRight" class="operatorRight" > <p>{{ operator }}</p></div>
+                </div>
+        </div>
+          </div>
+     </div>
   </div>
 
 </template>
@@ -23,8 +23,7 @@ export default {
   data () {
     return {
       colorOfValues: '',
-      eqLast:false,
-      eqBool:false,
+      predEqOperator:undefined,
       result:'0',
       values:[1,2,3,4,5,6,7,8,9,0, '1st Vue app by JTS'],
       operatorsLeft:['AC','C','%','+-','.',],
@@ -34,8 +33,6 @@ export default {
       operatorCalc:'',
       counterNext:false
     }
-  },
-  updated(){
   },
   methods:{
     addResult(value){
@@ -51,7 +48,7 @@ export default {
     operation(operator){
       switch (operator) {
         case 'AC':
-          return this.arg1=undefined, this.arg2=undefined, this.counterNext=false, this.eqBool=false, this.result='0';
+          return this.predEqOperator=undefined, this.arg1=undefined, this.arg2=undefined, this.counterNext=false, this.operatorCalc='', this.result='0';
           break;
         case 'C':
           if (this.result===this.arg1){
@@ -78,18 +75,13 @@ export default {
           }
           break;
       }
-      // if (operator === 'AC'){ return this.arg1=undefined, this.arg2=undefined, this.counterNext=false, this.result='0'  }
-      // if (operator === 'C'){ if (this.result==this.arg1){ return this.result='0', this.arg1=undefined}else{
-      //   return this.result='0', this.arg2=undefined
-      // }}
-      // if (operator === '+-'){ if(this.result.charAt(0) == '-'){return this.result = this.result.slice(-(this.result.length-1))}
-      // else return this.result = '-'+this.result}
+
+      if ( operator !== '=' && this.predEqOperator !== undefined ){
+        return        this.arg1=this.result, this.result='0', this.operatorCalc = operator }
+
 
       if(this.arg1!==undefined && this.counterNext===true){
-       if ((operator === '=') && this.eqBool){
-         console.log(this.eqBool)
-
-       }else{ this.arg2=this.result; this.eqBool=true}
+        this.arg2=this.result;
         let arg1 = Number(this.arg1);
         let arg2 = Number(this.arg2);
         let res;
@@ -125,11 +117,11 @@ export default {
         this.arg1=String(this.result);
         if (operator === '=') {
           this.arg2=String(arg2);
+          this.predEqOperator = this.operatorCalc;
         }else{
           this.operatorCalc = operator;
         }
       }
-
 
         if (this.arg1==undefined){
           this.arg1=this.result;
@@ -137,23 +129,6 @@ export default {
           this.operatorCalc=operator;
           this.counterNext=true;
         }
-
-
-      // case 'AC':
-      //   this.arg1=0;
-      //   this.arg2=0;
-      //   this.operatorCalc=0;
-      //   break;
-      // case 'C':
-      //   if (this.arg1!==''){
-      //     this.arg2 = ''
-      //   }else{
-      //     this.arg1=''
-      //   }
-      //   break;
-      //   default:
-      //     alert( 'Ты что-то сломал)' );
-      // }
     }
   }
 
